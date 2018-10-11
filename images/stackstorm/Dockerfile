@@ -149,6 +149,19 @@ ENTRYPOINT ["/st2-docker/bin/entrypoint.sh"]
 # Install inspec
 RUN curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P inspec
 
+# Add docker-ce so that StackStorm can spawn sister containers (to run ansible, for tuono)
+RUN apt-get -y install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && \
+    sudo add-apt-repository -y \
+       "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+       $(lsb_release -cs) \
+       stable" && \
+    apt-get update && apt-get -y install docker-ce
+ 
 COPY ./test /st2-docker/test
 COPY bin/test.sh /st2-docker/bin
 
